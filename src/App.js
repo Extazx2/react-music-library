@@ -1,5 +1,5 @@
-import './App.css';
-import Library from './components/Library';
+import './App.scss';
+import Library from './components/library';
 
 function App() {
   return (

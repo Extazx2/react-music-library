@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getSongs } from "../services/library";
+import { getSongs } from "../../services/library";
+import "./style.scss"
 
 const Library = () => {
     const [songs, setSongs] = useState([])
@@ -11,14 +12,14 @@ const Library = () => {
     }, [])
 
     const listItems = songs.map(song => (
-        <div key={song.id}>
-            <div className="title">{song.title}</div>
-            <div className="album">{song.album.title}</div>
-            <div className="artist">{song.album.artist}</div>
+        <div key={song.id} className="row">
+            <div className="column title">{song.title}</div>
+            <div className="column album">{song.album.title}</div>
+            <div className="column artist">{song.album.artist}</div>
+            <div className="column duration">{song.duration.toFixed(2)}</div>
         </div>
     ))
 
-    console.log(listItems)
     return (
         <div className="Library">
             <h1>Library</h1>

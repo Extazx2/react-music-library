@@ -1,0 +1,45 @@
+.Library {
+    .table-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        .column {
+            cursor: pointer;
+            font-weight: bold;
+
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+        }
+    }
+
+    .column {
+        padding: 0.8em 0;
+        display: inline-block;
+    }
+
+    .row {
+        .column {
+            padding: 0.5em 0;
+            vertical-align: middle;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        &:nth-child(odd) {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+    }
+
+    .title {
+        width: 50%;
+    }
+    .album {
+        width: 20%;
+    }
+    .artist {
+        width: 20%;
+    }
+    .duration {
+        width: 10%;
+    }
+}
