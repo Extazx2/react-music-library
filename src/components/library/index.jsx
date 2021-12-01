@@ -57,9 +57,12 @@ const Library = () => {
         </div>
     ))
 
+    const errorMessage = !error ? null : <div className="error message">{error}</div>
+
     return (
         <div className="Library">
             <h1>Library</h1>
+            {errorMessage}
             <div className="table-header">
                 <div className="column title" onClick={() => updateSort('title')}>
                     Title <SortIcon sort={sort} name="title"/>
