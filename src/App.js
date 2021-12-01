@@ -1,10 +1,11 @@
 import './App.css';
+import Library from './components/Library';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        Music Library
+        <Library />
       </header>
     </div>
   );

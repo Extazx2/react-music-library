@@ -1,11 +1,11 @@
 import albumsCollection from "./albums.json"
 import songsCollection from "./songs.json"
 
-function getAlbums() {
+const getAlbums = () => {
     return Promise.resolve(albumsCollection)
 }
 
-function getSongs() {
+const getSongs = () => {
     // For each song in the songsCollection, we will try to find the matching album
     const songs = songsCollection.map(song => {
         // We try to find the album whose id is the same as the album id of the song
@@ -19,7 +19,8 @@ function getSongs() {
     return Promise.resolve(songs)
 }
 
-export default {
+const db = {
     getAlbums,
     getSongs
 }
+export default db
