@@ -25,13 +25,14 @@ const Library = () => {
         direction: "asc"
     })
     const [error, setError] = useState(null)
+    const [query, setQuery] = useState("")
 
     useEffect(() => {
         loadSongs()
-    }, [sort]) // We update the list of songs when we change the sort filter
+    }, [query, sort]) // We update the list of songs when we change the sort filter
 
     const loadSongs = () => {
-        getSongs(null, sort)
+        getSongs(query, sort)
         .then(setSongs) // syntax equals (data => setSongs(data))
         .catch(setError)
     }
@@ -61,7 +62,19 @@ const Library = () => {
 
     return (
         <div className="Library">
-            <h1>Library</h1>
+            <div className="header">
+                <h1>Library</h1>
+                <div className="search-form">
+                    <input
+                    defaultValue={query}
+                    onKeyUp={e => {
+                        let typedQuery = e.target.value
+                        if (e.code === "Enter") {
+                            setQuery(typedQuery)
+                        }
+                    }} />
+                </div>
+            </div>
             {errorMessage}
             <div className="table-header">
                 <div className="column title" onClick={() => updateSort('title')}>
