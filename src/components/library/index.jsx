@@ -1,31 +1,16 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
-import { getSongs } from "../../services/library";
-import "./style.scss"
+import {useEffect, useState} from "react";
+import {getSongs} from "../../services/library";
+import './style.scss'
+import {SortIcon} from '../common/SortIcon';
+import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 
-const SortIcon = ({ sort, name }) => {
-    if (sort.property !== name) return null
-
-    let icon = null
-    if (sort.direction === "asc") {
-        icon = "caret-up"
-    } else if (sort.direction === "desc") {
-        icon = "caret-down"
-    } else {
-        return null
-    }
-
-    return <FontAwesomeIcon icon={icon} />
-}
-
-const Library = () => {
+const Library = ({query}) => {
     const [songs, setSongs] = useState([])
     const [sort, setSort] = useState({
         property: "title",
         direction: "asc"
     })
     const [error, setError] = useState(null)
-    const [query, setQuery] = useState("")
 
     useEffect(() => {
         loadSongs()
@@ -50,56 +35,43 @@ const Library = () => {
     }
 
     const listItems = songs.map(song => (
-        <div key={song.id} className="row">
-            <div className="column title">{song.title}</div>
-            <div className="column album">{song.album.title}</div>
-            <div className="column artist">{song.album.artist}</div>
-            <div className="column duration">{song.duration.toFixed(2)}</div>
-        </div>
+        <TableRow key={song.id} hover>
+            <TableCell>{song.title}</TableCell>
+            <TableCell>{song.album.title}</TableCell>
+            <TableCell>{song.album.artist}</TableCell>
+            <TableCell>{song.duration.toFixed(2)}</TableCell>
+        </TableRow>
     ))
 
     const errorMessage = !error ? null : <div className="error message">{error}</div>
 
     return (
-        <div className="Library">
-            <div className="header">
-                <h1>Library</h1>
-                <div className="search-form">
-                    <div className="search-field">
-                        <input
-                            defaultValue={query}
-                            placeholder="Search Song, Album or Artist"
-                            onKeyUp={e => {
-                                let typedQuery = e.target.value
-                                if (e.code === "Enter") {
-                                    setQuery(typedQuery)
-                                }
-                            }} />
-                        <button><FontAwesomeIcon icon="search" /></button>
-                    </div>
-                </div>
-            </div>
+        <>
             {errorMessage}
-            <div className="table">
-                <div className="table-header">
-                    <div className="column title" onClick={() => updateSort('title')}>
-                        Title <SortIcon sort={sort} name="title" />
-                    </div>
-                    <div className="column album" onClick={() => updateSort('album')}>
-                        Album <SortIcon sort={sort} name="album" />
-                    </div>
-                    <div className="column artist" onClick={() => updateSort('artist')}>
-                        Artist <SortIcon sort={sort} name="artist" />
-                    </div>
-                    <div className="column duration" onClick={() => updateSort('duration')}>
-                        Duration <SortIcon sort={sort} name="duration" />
-                    </div>
-                </div>
-                <div className="table-body">
-                    {listItems}
-                </div>
-            </div>
-        </div>
+            <TableContainer>
+                <Table>
+                    <TableHead >
+                        <TableRow>
+                            <TableCell onClick={() => updateSort('title')}>
+                                Title <SortIcon sort={sort} name="title" />
+                            </TableCell>
+                            <TableCell onClick={() => updateSort('album')}>
+                                Album <SortIcon sort={sort} name="album" />
+                            </TableCell>
+                            <TableCell onClick={() => updateSort('artist')}>
+                                Artist <SortIcon sort={sort} name="artist" />
+                            </TableCell>
+                            <TableCell onClick={() => updateSort('duration')}>
+                                Duration <SortIcon sort={sort} name="duration" />
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {listItems}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </>
     )
 }
 

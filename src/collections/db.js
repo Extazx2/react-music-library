@@ -1,6 +1,12 @@
 import albumsCollection from "./albums.json"
 import songsCollection from "./songs.json"
 
+const delayedResolve = (payload) => {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(payload), 800)
+  })
+}
+
 const getAlbums = () => {
   return Promise.resolve(albumsCollection)
 }
@@ -17,7 +23,7 @@ const getSongs = (query = "", sort = { property: "title", direction: "asc" }) =>
     return song
   })
   songs = sortList(filterList(songs, query), sort)
-  return Promise.resolve(songs)
+  return delayedResolve(songs)
 }
 
 const filterList = (list, query) => {
