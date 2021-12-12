@@ -25,7 +25,8 @@ const AlbumList = ({query}) => {
                 <Box sx={{
                     display: "grid",
                     gap: 3,
-                    gridTemplateColumns: "repeat(3, 1fr)"
+                    gridTemplateColumns: "repeat(3, 1fr)",
+                    justifyItems: "center"
                 }}>
                     {albums.map(album => {
                         return <Card sx={{maxWidth: 300}}>
