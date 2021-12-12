@@ -2,13 +2,13 @@ import './App.scss';
 import Library from './components/library';
 import { library } from "@fortawesome/fontawesome-svg-core"
 import { faCaretDown, faCaretUp, faSearch } from '@fortawesome/free-solid-svg-icons';
-import {AppBar, Toolbar, Typography} from '@mui/material';
+import {AppBar, Box, Button, Toolbar, Typography} from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import {useCallback, useState} from 'react';
 import AlbumList from './components/album/index.jsx';
-import {Routes, Route} from 'react-router-dom';
+import {Routes, Route, Link as RouterLink, Navigate} from 'react-router-dom';
 
 library.add([faCaretUp,faCaretDown,faSearch])
 
@@ -69,16 +69,15 @@ function App() {
                 <Toolbar>
                     <Typography
                         variant="h3"
-                        sx={{
-                            flexGrow: 1,
-                            display: {
-                                xs: 'none',
-                                sm: 'block'
-                            }
-                        }}
+                        sx={{mr: 2}}
                     >
                         Music Library
                     </Typography>
+                    <Box sx={{flexGrow: 1}}>
+                        <Button variant="contained" disableElevation component={RouterLink} to="/albums">Albums</Button>
+                        <Button variant="contained" disableElevation component={RouterLink} to="/songs">Songs</Button>
+                    </Box>
+
                     <Search>
                         <SearchIconWrapper>
                             <SearchIcon />
@@ -94,8 +93,9 @@ function App() {
             </AppBar>
             <Toolbar/>
             <Routes>
-                <Route path={"/"} element={<AlbumList query={query} />} />
+                <Route path={"/albums"} element={<AlbumList query={query} />} />
                 <Route path={"/songs"} element={<Library query={query}/>} />
+                <Route path="*" element={<Navigate to={"/songs"} />} />
             </Routes>
         </div>
     );
