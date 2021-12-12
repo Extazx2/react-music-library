@@ -8,6 +8,7 @@ import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import {useCallback, useState} from 'react';
 import AlbumList from './components/album/index.jsx';
+import {Routes, Route} from 'react-router-dom';
 
 library.add([faCaretUp,faCaretDown,faSearch])
 
@@ -92,8 +93,10 @@ function App() {
                 </Toolbar>
             </AppBar>
             <Toolbar/>
-            <AlbumList query={query} />
-            <Library query={query}/>
+            <Routes>
+                <Route path={"/"} element={<AlbumList query={query} />} />
+                <Route path={"/songs"} element={<Library query={query}/>} />
+            </Routes>
         </div>
     );
 }
