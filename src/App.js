@@ -7,6 +7,7 @@ import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import {useCallback, useState} from 'react';
+import AlbumList from './components/album/index.jsx';
 
 library.add([faCaretUp,faCaretDown,faSearch])
 
@@ -91,6 +92,7 @@ function App() {
                 </Toolbar>
             </AppBar>
             <Toolbar/>
+            <AlbumList query={query} />
             <Library query={query}/>
         </div>
     );

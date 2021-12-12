@@ -7,8 +7,9 @@ const delayedResolve = (payload) => {
   })
 }
 
-const getAlbums = () => {
-  return Promise.resolve(albumsCollection)
+const getAlbums = (query = "") => {
+  const albums = filterList(albumsCollection, query)
+  return Promise.resolve(albums)
 }
 
 const getSongs = (query = "", sort = { property: "title", direction: "asc" }) => {
@@ -31,7 +32,7 @@ const filterList = (list, query) => {
   if (query.length < 1) return list
   return list.filter(item => {
     const pattern = new RegExp(query, "gi")
-    return pattern.test(item.title) || pattern.test(item.album.title) || pattern.test(item.album.artist)
+    return pattern.test(item.title) || pattern.test(item.artist) || pattern.test(item.album?.title) || pattern.test(item.album?.artist)
   })
 }
 
