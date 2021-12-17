@@ -1,39 +1,19 @@
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
-import {useCallback, useEffect, useState} from "react";
+import {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {
-    selectQuery,
-    selectSortDirection,
-    selectSortProperty,
-    updateSortDirection,
-    updateSortProperty
-} from '../../reducers/musicSlice.js';
-import {getSongs} from "../../services/library";
+import {addSongToPlaylist, selectSongs, updateSortDirection, updateSortProperty} from '../../reducers/musicSlice.js';
 import {SortIcon} from '../common/SortIcon';
 import './style.scss'
 
-const Library = ({query}) => {
-    const [songs, setSongs] = useState([])
-    const query3 = useSelector(selectQuery)
-    const sortDirection = useSelector(selectSortDirection)
-    const sortProperty = useSelector(selectSortProperty)
+const Library = () => {
     const dispatch = useDispatch()
+
+    const songs = useSelector(selectSongs)
 
     const [sort, setSort] = useState({
         property: "title",
         direction: "asc"
     })
-    const [error, setError] = useState(null)
-
-    const loadSongs = useCallback((q) => {
-        getSongs(q, sort)
-            .then(setSongs) // syntax equals (data => setSongs(data))
-            .catch(setError)
-    }, [sort])
-
-    useEffect(() => {
-        loadSongs(query3)
-    }, [loadSongs, query3, sort]) // We update the list of songs when we change the sort filter
 
     const updateSort = (newProperty) => {
         let { property, direction } = sort
@@ -49,8 +29,14 @@ const Library = ({query}) => {
         })
     }
 
+    const handleSongClicked = (song) => {
+        dispatch(addSongToPlaylist(song))
+    }
+
+    //     <div style={{display: "flex"}></div>
+
     const listItems = songs.map(song => (
-        <TableRow key={song.id} hover>
+        <TableRow key={song.id} hover onClick={() => handleSongClicked(song)}>
             <TableCell>{song.title}</TableCell>
             <TableCell>{song.album.title}</TableCell>
             <TableCell>{song.album.artist}</TableCell>
@@ -58,11 +44,8 @@ const Library = ({query}) => {
         </TableRow>
     ))
 
-    const errorMessage = !error ? null : <div className="error message">{error}</div>
-
     return (
         <>
-            {errorMessage}
             <TableContainer>
                 <Table>
                     <TableHead >

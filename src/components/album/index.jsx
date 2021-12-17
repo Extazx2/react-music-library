@@ -1,27 +1,15 @@
-import {useEffect, useState} from 'react';
 import {Box, Card, CardContent, CardMedia, Container, Typography} from '@mui/material';
-import {getAlbums} from '../../services/library.js';
+import {useSelector} from "react-redux";
+import {selectAlbums} from "../../reducers/musicSlice.js";
 
 
-const AlbumList = ({query}) => {
-    const [albums, setAlbums] = useState([])
-    const [error, setError] = useState(null)
-
-    useEffect(() => {
-        loadAlbums()
-    }, [query])
-
-    const loadAlbums = () => {
-        getAlbums(query)
-            .then(setAlbums)
-            .catch(setError)
-    }
+const AlbumList = () => {
+    const albums = useSelector(selectAlbums)
 
     return (
         <>
             <Container fixed>
                 <h1>Album list</h1>
-                {error}
                 <Box sx={{
                     display: "grid",
                     gap: 3,

@@ -1,16 +1,25 @@
 import {library} from "@fortawesome/fontawesome-svg-core"
 import {faCaretDown, faCaretUp, faSearch} from '@fortawesome/free-solid-svg-icons';
 import SearchIcon from '@mui/icons-material/Search';
-import {AppBar, Box, Button, Toolbar, Typography} from '@mui/material';
+import {AppBar, Box, Button, Toolbar, Typography, Grid} from '@mui/material';
 import InputBase from '@mui/material/InputBase';
 import {alpha, styled} from '@mui/material/styles';
-import {useCallback, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Link as RouterLink, Navigate, Route, Routes} from 'react-router-dom';
 import './App.scss';
+import {getAlbums, getSongs} from "./services/library.js";
+import Player from "./components/player/index.js";
 import AlbumList from './components/album/index.jsx';
 import Library from './components/library';
-import {selectQuery, updateQuery} from './reducers/musicSlice.js';
+import {
+    selectAlbums,
+    selectQuery,
+    updateQuery,
+    selectSongs,
+    loadSongs,
+    selectSortDirection, selectSortProperty, loadAlbums
+} from './reducers/musicSlice.js';
 
 library.add([faCaretUp,faCaretDown,faSearch])
 
@@ -58,20 +67,34 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 
 function App() {
-    const [query, setQuery] = useState("")
+    const query = useSelector(selectQuery)
+    const sortDirection = useSelector(selectSortDirection)
+    const sortProperty = useSelector(selectSortProperty)
 
-    const query2 = useSelector(state => state.music.query)
-    const query3 = useSelector(selectQuery)
-
-    console.log(query2)
-    console.log(query3)
+    const songs = useSelector(selectSongs)
+    const albums = useSelector(selectAlbums)
+    console.log("songs et albums", songs, albums)
 
     const dispatch = useDispatch()
 
-    const handleSearchChange = useCallback((e) => {
-        setQuery(e.target.value)
-        return e.target.value
+    const loadSongsAtAppStart = useCallback((q) => {
+        getSongs(q, {property: sortProperty, direction: sortDirection})
+            .then((data) => {
+                dispatch(loadSongs(data))
+            })
     }, [])
+
+    const loadAlbumsAtAppStart = useCallback(() => {
+        getAlbums()
+            .then((alb) => {
+                dispatch(loadAlbums(alb))
+            })
+    }, [])
+
+    useEffect(() => {
+        loadSongsAtAppStart(query)
+        loadAlbumsAtAppStart()
+    }, [loadSongsAtAppStart, query, sortProperty, sortDirection, loadAlbumsAtAppStart])
 
     const handleSearchChangeRedux = useCallback((e) => {
         dispatch(updateQuery(e.target.value))
@@ -107,11 +130,18 @@ function App() {
                 </Toolbar>
             </AppBar>
             <Toolbar/>
-            <Routes>
-                <Route path={"/albums"} element={<AlbumList query={query} />} />
-                <Route path={"/songs"} element={<Library query={query}/>} />
-                <Route path="*" element={<Navigate to={"/songs"} />} />
-            </Routes>
+            <Grid container spacing={2}>
+                <Grid item xs={9}>
+                    <Routes>
+                        <Route path={"/albums"} element={<AlbumList />} />
+                        <Route path={"/songs"} element={<Library />} />
+                        <Route path="*" element={<Navigate to={"/songs"} />} />
+                    </Routes>
+                </Grid>
+                <Grid item xs={3}>
+                    <Player />
+                </Grid>
+            </Grid>
         </div>
     );
 }
