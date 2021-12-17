@@ -1,14 +1,16 @@
-import './App.scss';
-import Library from './components/library';
-import { library } from "@fortawesome/fontawesome-svg-core"
-import { faCaretDown, faCaretUp, faSearch } from '@fortawesome/free-solid-svg-icons';
-import {AppBar, Box, Button, Toolbar, Typography} from '@mui/material';
-import { styled, alpha } from '@mui/material/styles';
-import InputBase from '@mui/material/InputBase';
+import {library} from "@fortawesome/fontawesome-svg-core"
+import {faCaretDown, faCaretUp, faSearch} from '@fortawesome/free-solid-svg-icons';
 import SearchIcon from '@mui/icons-material/Search';
+import {AppBar, Box, Button, Toolbar, Typography} from '@mui/material';
+import InputBase from '@mui/material/InputBase';
+import {alpha, styled} from '@mui/material/styles';
 import {useCallback, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {Link as RouterLink, Navigate, Route, Routes} from 'react-router-dom';
+import './App.scss';
 import AlbumList from './components/album/index.jsx';
-import {Routes, Route, Link as RouterLink, Navigate} from 'react-router-dom';
+import Library from './components/library';
+import {selectQuery, updateQuery} from './reducers/musicSlice.js';
 
 library.add([faCaretUp,faCaretDown,faSearch])
 
@@ -58,9 +60,21 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 function App() {
     const [query, setQuery] = useState("")
 
+    const query2 = useSelector(state => state.music.query)
+    const query3 = useSelector(selectQuery)
+
+    console.log(query2)
+    console.log(query3)
+
+    const dispatch = useDispatch()
+
     const handleSearchChange = useCallback((e) => {
         setQuery(e.target.value)
         return e.target.value
+    }, [])
+
+    const handleSearchChangeRedux = useCallback((e) => {
+        dispatch(updateQuery(e.target.value))
     }, [])
 
     return (
@@ -86,7 +100,8 @@ function App() {
                             defaultValue={query}
                             placeholder="Search Song, Album or Artist…"
                             inputProps={{ 'aria-label': 'search' }}
-                            onChange={handleSearchChange}
+                            onChange={(e) => dispatch(updateQuery(e.target.value))}
+                            // onChange={handleSearchChangeRedux}
                         />
                     </Search>
                 </Toolbar>

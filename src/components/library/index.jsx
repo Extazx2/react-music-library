@@ -1,32 +1,47 @@
-import {useEffect, useState} from "react";
-import {getSongs} from "../../services/library";
-import './style.scss'
-import {SortIcon} from '../common/SortIcon';
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import {useCallback, useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {
+    selectQuery,
+    selectSortDirection,
+    selectSortProperty,
+    updateSortDirection,
+    updateSortProperty
+} from '../../reducers/musicSlice.js';
+import {getSongs} from "../../services/library";
+import {SortIcon} from '../common/SortIcon';
+import './style.scss'
 
 const Library = ({query}) => {
     const [songs, setSongs] = useState([])
+    const query3 = useSelector(selectQuery)
+    const sortDirection = useSelector(selectSortDirection)
+    const sortProperty = useSelector(selectSortProperty)
+    const dispatch = useDispatch()
+
     const [sort, setSort] = useState({
         property: "title",
         direction: "asc"
     })
     const [error, setError] = useState(null)
 
-    useEffect(() => {
-        loadSongs()
-    }, [query, sort]) // We update the list of songs when we change the sort filter
-
-    const loadSongs = () => {
-        getSongs(query, sort)
+    const loadSongs = useCallback((q) => {
+        getSongs(q, sort)
             .then(setSongs) // syntax equals (data => setSongs(data))
             .catch(setError)
-    }
+    }, [sort])
+
+    useEffect(() => {
+        loadSongs(query3)
+    }, [loadSongs, query3, sort]) // We update the list of songs when we change the sort filter
 
     const updateSort = (newProperty) => {
         let { property, direction } = sort
         if (newProperty === property) {
             direction = direction === "asc" ? "desc" : "asc"
+            dispatch(updateSortDirection(direction))
         }
+        dispatch(updateSortProperty(newProperty))
         property = newProperty
         setSort({
             property,
