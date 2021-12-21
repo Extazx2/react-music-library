@@ -2,28 +2,51 @@ import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
-import {Box, Card, CardContent, CardMedia, CircularProgress, IconButton, Typography} from "@mui/material";
+import {Box, Card, CardContent, CardMedia, Container, IconButton, Typography} from "@mui/material";
 import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import {selectPlaylist} from "../../reducers/musicSlice.js";
 
+const PlayPauseButton = ({handlePlay, handlePause, isPlaying}) => {
+    return isPlaying
+        ? <PauseIcon sx={{height: 38, width: 38}} onClick={() => handlePause()}/>
+        : <PlayArrowIcon sx={{height: 38, width: 38}} onClick={() => handlePlay()}/>
+}
+
 const Player = () => {
+    // List of songs to be played, stored in redux
     const playlist = useSelector(selectPlaylist)
 
+    // Song actually played
     const [songPlayed, setSongPlayed] = useState(null)
+    // Boolean to know if a song is playing or not
     const [isPlaying, setIsPlaying] = useState(false)
+    // The Audio tag in which we play songs
     const [audioPlayer] = useState(new Audio(""))
+    // Index of the selected songs in the playlist
     const [songIndex, setSongIndex] = useState(0)
 
-    const loadSong = () => {
+
+    // Play launch the songs at current index
+    // Pause stop the songs at current index
+    // Next song plays the next song in the list
+    // It won't do anything if there are no elements after
+    // Previous plays previous songs in the list
+    // It does nothing if it's the first song in the list
+
+    const loadSong = (index) => {
         if (playlist.length > 0) {
-            audioPlayer.src = "/songs/" + playlist[songIndex].file
+            const songToLoad = playlist[index].file
+            setSongPlayed(songToLoad)
+            audioPlayer.src = "/songs/" + songToLoad
             audioPlayer.load()
         }
     }
 
     const playSong = () => {
-        loadSong()
+        if (songPlayed == null) {
+            loadSong(songIndex)
+        }
         setIsPlaying(true)
         audioPlayer.play()
             .catch((_) => setIsPlaying(false))
@@ -35,30 +58,27 @@ const Player = () => {
     }
 
     const playNextSong = () => {
-        audioPlayer.pause()
-        const currentSong = playlist[songIndex]
         const nextIndex = songIndex+1
-        console.log(nextIndex)
-        // Bug présent : le premier clic sur le bouton RELANCE la première chanson
-        if (nextIndex <= playlist.length) {
-            const nextSong = playlist[nextIndex]
-            console.log(nextSong)
+        if (nextIndex < (playlist.length)){
+            audioPlayer.pause()
             setSongIndex(nextIndex)
-            setSongPlayed(nextSong)
-            setIsPlaying(true)
-            audioPlayer.src = "/songs/" + nextSong.file
-            audioPlayer.load()
-            playSong()
         }
-        console.log(songPlayed)
     }
 
     const playPreviousSong = () => {
-
+        if (songIndex !== 0) {
+            const previousIndex = songIndex - 1
+            setSongIndex(previousIndex)
+        }
     }
 
+    useEffect(() => {
+        loadSong(songIndex)
+        playSong()
+    }, [songIndex]) // Seulement songIndex en dépendances pour éviter les boucles infinies
+
     return (
-        <>
+        <Container fixed>
             { (playlist.length > 0)
                 ? <Card sx={{display: 'flex'}}>
                     <Box sx={{display: 'flex', flexDirection: 'column'}}>
@@ -71,13 +91,15 @@ const Player = () => {
                             </Typography>
                         </CardContent>
                         <Box sx={{display: 'flex', alignItems: 'center', pl: 1, pb: 1}}>
-                            <IconButton aria-label="previous">
+                            <IconButton aria-label="previous" onClick={() => playPreviousSong()}>
                                 <SkipPreviousIcon/>
                             </IconButton>
                             <IconButton aria-label="play/pause">
-                                {isPlaying
-                                ? <PauseIcon sx={{height: 38, width: 38}} onClick={() => pauseSong()}/>
-                                : <PlayArrowIcon sx={{height: 38, width: 38}} onClick={() => playSong()}/> }
+                                <PlayPauseButton
+                                    handlePause={pauseSong}
+                                    handlePlay={playSong}
+                                    isPlaying={isPlaying}
+                                />
                             </IconButton>
                             <IconButton aria-label="next" onClick={() => playNextSong()}>
                                 <SkipNextIcon/>
@@ -111,18 +133,11 @@ const Player = () => {
                             </IconButton>
                         </Box>
                     </Box>
-                    <CardMedia
-                        component="img"
-                        sx={{width: 151}}
-                        image={""}
-                        alt={""}
-                    />
                 </Card>
             }
 
             {playlist.map((song) => <Typography>{song.title}</Typography>)}
-        </>
-
+        </Container>
     )
 }
 
